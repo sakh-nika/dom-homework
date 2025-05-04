@@ -88,7 +88,6 @@
     return (dateEl + "." + monthEl + "." + yearEl + " " + hourEl + ":" + minEl);
   }
 
-
   // добавление нового комментария (cоздаем объект, добавляем его в массив, а рендерная функция его отрисовывает)
 
   buttonEl.addEventListener("click", () => {
@@ -97,9 +96,9 @@
       return;
     } else {
       const newComment = {
-      name: inputNameEl.value,
+      name: inputNameEl.value.replaceAll("<", "&lt").replaceAll(">", "&gt"),
       date: getdateFormat(),
-      text: textareaEl.value,
+      text: textareaEl.value.replaceAll("<", "&lt").replaceAll(">", "&gt"),
       likeStatus: false,
       likes: 0,
       }
@@ -110,14 +109,15 @@
     }
   });
 
-  // обработчик лайков
-  const getLike = () => {
+    // обработчик лайков
+    const getLike = () => {
     const likeButtons = document.querySelectorAll(".like-button");
 
     for (const buttonLike of likeButtons) {
-      buttonLike.addEventListener("click", () => {
+      buttonLike.addEventListener("click", (event) => {
+        event.stopPropagation(); // при клике на иконку лайка блокирует клик на комментарий initCommentListeners()
         const index = buttonLike.dataset.index; // сохраняем индекс в переменную
-        const comment = commentList[index]; //  находим комментарий по индексу
+        const comment = commentList[index]; // находим комментарий по индексу
         comment.likeStatus = !comment.likeStatus; // ! меняет значение на противоположное исходному
         comment.likes += comment.likeStatus ? 1 : -1; // при значении likeStatus: false условие вернет TRUE, поэтому + 1; в противном случае + -1
         // console.log(comment.likeStatus);
@@ -125,14 +125,25 @@
       })  
     }
   }
-  getLike();
 
-  
+      // клик на комментарий
+      const initCommentListeners = () => {
+    const commentElements = document.querySelectorAll("li");
+    for(const commentElement of commentElements) {
+      commentElement.addEventListener("click", () => {
+        const commentIndex = commentElement.dataset.index; // сохраняем индекс в переменную
+        const comment = commentList[commentIndex]; //  находим комментарий по индексу
+        // console.log(comment);
+        textareaEl.value =`> ${comment.name} ${comment.text}\n\n`;
+      })
+    }
+  }
+
   // отрисовка комментариев 
   const renderCommentList = () => {
     listEl.innerHTML = commentList.map((comment, index) => {
       return `
-          <li class="comment">
+          <li data-index="${index}" class="comment">
             <div class="comment-header">
               <div>${comment.name}</div>
               <div>${comment.date}</div>
@@ -152,9 +163,9 @@
         `
     }).join("");
     getLike();
+    initCommentListeners();
   }
   renderCommentList();
-
 
 </script>
 
