@@ -1,6 +1,6 @@
-import { addNewComment } from "./addComment.js";
-import { addLike, initCommentListeners } from "./clickComment.js";
+import { addLike, initReplyListeners } from "./clickComment.js";
 import { commentList } from "./commentList.js";
+import { getDateFormat } from "./getDateFormat.js";
 
 // отрисовка комментариев
 export const renderCommentList = () => {
@@ -11,7 +11,7 @@ export const renderCommentList = () => {
           <li data-index="${index}" class="comment">
             <div class="comment-header">
               <div>${comment.name}</div>
-              <div>${comment.date}</div>
+              <div>${getDateFormat(comment.date)}</div>
             </div>
             <div class="comment-body">
               <div class="comment-text">
@@ -21,14 +21,14 @@ export const renderCommentList = () => {
             <div class="comment-footer">
               <div class="likes">
                 <span class="likes-counter">${comment.likes}</span>
-                <button data-index="${index}" class="like-button ${comment.likeStatus ? "-active-like" : ""}"></button>
+                <button data-index="${index}" class="like-button ${comment.isLiked ? "-active-like" : ""}"></button>
               </div>
             </div>
           </li>
         `;
     })
     .join("");
-  addLike();
-  initCommentListeners();
-  addNewComment();
+
+  addLike(renderCommentList);
+  initReplyListeners();
 };
