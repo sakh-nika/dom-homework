@@ -1,10 +1,9 @@
-import { updateComments } from "./commentList.js";
 import { getReplaceAll } from "./getReplaceAll.js";
 import { postComment } from "./api.js";
 
 // добавление нового комментария (cоздаем объект, добавляем его в массив, а рендерная функция его отрисовывает)
 
-export const addNewComment = (renderCommentList) => {
+export const addNewComment = () => {
   const nameEl = document.getElementById("name-input");
   const textEl = document.getElementById("text-input");
   const buttonEl = document.querySelector(".add-form-button");
@@ -14,12 +13,16 @@ export const addNewComment = (renderCommentList) => {
       console.error("Заполните форму!");
       return;
     }
-
+    // добавление стилей для режима ожидания, а после загрузки возвращение к исходным
+    document.querySelector(".load").classList.add("loading"); // при стилях прописанных в сss
+    // document.querySelector(".loading").style.display = "block"; // при инлайновых стилях
+    document.querySelector(".add-form").style.display = "none";
     // добавляем новый комментарий по клику
     postComment(getReplaceAll(textEl.value), getReplaceAll(nameEl.value)).then(
-      (data) => {
-        updateComments(data);
-        renderCommentList();
+      () => {
+        document.querySelector(".load").classList.remove("loading");
+        // document.querySelector(".loading").style.display = "none";
+        document.querySelector(".add-form").style.display = "flex";
         nameEl.value = "";
         textEl.value = "";
       }
