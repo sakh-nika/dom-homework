@@ -1,12 +1,11 @@
-import { fetchComments } from "./modules/api.js";
-import { updateComments } from "./modules/commentList.js";
+import { fetchAndRenderComments } from "./modules/api.js";
 import { addNewComment } from "./modules/addComment.js";
-import { renderCommentList } from "./modules/renderComment.js";
 
-// здесь получаем комментарии
-fetchComments().then((data) => {
-  updateComments(data);
-  renderCommentList();
-});
+// пока данные загружаются, выходит сообщение
+document.querySelector(".comments").innerHTML = "Пожалуйста, подождите, комментарии загружаются..."
 
-addNewComment(renderCommentList);
+// здесь получаем и воспроизводим комментарии
+fetchAndRenderComments()
+
+// здесь добавляем новые комментарии
+addNewComment();

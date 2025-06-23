@@ -1,3 +1,4 @@
+import { delay } from "./api.js";
 import { commentList } from "./commentList.js";
 
 // обработчик лайков
@@ -8,10 +9,15 @@ export const addLike = (renderCommentList) => {
       event.stopPropagation(); // при клике на иконку лайка блокирует клик на комментарий initCommentListeners()
       const index = buttonLike.dataset.index; // сохраняем индекс в переменную
       const comment = commentList[index]; // находим комментарий по индексу
-      comment.isLiked = !comment.isLiked; // ! меняет значение на противоположное исходному
-      comment.likes += comment.isLiked ? 1 : -1; // при значении isLiked: false условие вернет TRUE, поэтому + 1; в противном случае + -1
-      // console.log(comment.isLiked);
-      renderCommentList();
+      buttonLike.classList.add("-loading-like");
+      delay(2000).then(() => {
+        comment.likes = comment.isLiked // при значении isLiked: false условие вернет TRUE, поэтому + 1; в противном случае + -1
+          ? comment.likes - 1
+          : comment.likes + 1;
+        comment.isLiked = !comment.isLiked; // ! меняет значение на противоположное исходному
+        comment.isLikeLoading = false;
+        renderCommentList();
+      });
     });
   }
 };
